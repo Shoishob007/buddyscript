@@ -2,6 +2,7 @@ import Image from "next/image";
 import { redirect } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import PostList from "@/components/PostList";
+import ThemeToggle from "@/components/ThemeToggle";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -28,6 +29,7 @@ export default async function FeedPage() {
 
     return (
         <div className="_layout _layout_main_wrapper">
+            <ThemeToggle />
             <div className="_main_layout">
                 <Navbar currentUser={currentUser} />
 

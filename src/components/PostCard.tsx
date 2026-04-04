@@ -539,10 +539,23 @@ export default function PostCard({ post, currentUserId }: PostCardProps) {
                     onClick={toggleLike}
                     disabled={liking}
                 >
-                    <span className="_feed_inner_timeline_reaction_link">
-                        <span>
+                    <span className="_feed_inner_timeline_reaction_link" style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="none" viewBox="0 0 19 19">
-                                <path fill={liked ? "#1890FF" : "#666"} d="M13.5 8.5h-3V3a1 1 0 00-2 0v5.5h-3a1 1 0 00-.707 1.707l4.5 4.5a1 1 0 001.414 0l4.5-4.5A1 1 0 0013.5 8.5z" />
+                                {liked ? (
+                                    <path
+                                        fill="#1890FF"
+                                        d="M7.944 17.917c-.637 0-1.152-.509-1.152-1.137V9.89c0-.628.515-1.137 1.152-1.137h2.073c.278 0 .532-.157.65-.403l1.56-3.219c.22-.454.739-.693 1.23-.567.492.126.814.581.764 1.08l-.297 2.927h2.44c.64 0 1.17.497 1.193 1.123a1.13 1.13 0 01-.023.245l-1.178 6.776a1.157 1.157 0 01-1.14.962H7.944zM2.74 9.437c-.64 0-1.157.511-1.157 1.14v6.196c0 .629.518 1.14 1.158 1.14h1.484c.64 0 1.158-.511 1.158-1.14v-6.196c0-.629-.518-1.14-1.158-1.14H2.74z"
+                                    />
+                                ) : (
+                                    <path
+                                        stroke="#666"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M7.944 17.917h7.162c.56 0 1.04-.392 1.133-.938l1.178-6.776a1.14 1.14 0 00-1.132-1.333h-3.36l.37-3.65a1.132 1.132 0 00-2.152-.632l-1.56 3.22a1.153 1.153 0 01-1.04.645h-.599c-.637 0-1.152.509-1.152 1.137v6.89c0 .628.515 1.137 1.152 1.137zM2.74 9.437h1.484c.64 0 1.158.511 1.158 1.14v6.196c0 .629-.518 1.14-1.158 1.14H2.74c-.64 0-1.157-.511-1.157-1.14v-6.196c0-.629.518-1.14 1.158-1.14z"
+                                    />
+                                )}
                             </svg>
                             {liked ? "Liked" : "Like"}
                         </span>
@@ -552,8 +565,8 @@ export default function PostCard({ post, currentUserId }: PostCardProps) {
                     className="_feed_inner_timeline_reaction_comment _feed_reaction"
                     onClick={toggleComments}
                 >
-                    <span className="_feed_inner_timeline_reaction_link">
-                        <span>
+                    <span className="_feed_inner_timeline_reaction_link" style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                             <svg className="_reaction_svg" xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="none" viewBox="0 0 21 21">
                                 <path stroke="#000" d="M1 10.5c0-.464 0-.696.009-.893A9 9 0 019.607 1.01C9.804 1 10.036 1 10.5 1c.464 0 .696 0 .893.009a9 9 0 018.598 8.598c.009.197.009.429.009.893v6.046c0 1.36 0 2.041-.317 2.535a2 2 0 01-.602.602c-.494.317-1.174.317-2.535.317H10.5c-.464 0-.696 0-.893-.009a9 9 0 01-8.598-8.598C1 11.196 1 10.964 1 10.5z" />
                                 <path stroke="#000" strokeLinecap="round" strokeLinejoin="round" d="M6.938 9.313h7.125M10.5 14.063h3.563" />
@@ -563,8 +576,8 @@ export default function PostCard({ post, currentUserId }: PostCardProps) {
                     </span>
                 </button>
                 <button className="_feed_inner_timeline_reaction_share _feed_reaction" type="button">
-                    <span className="_feed_inner_timeline_reaction_link">
-                        <span>
+                    <span className="_feed_inner_timeline_reaction_link" style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                             <svg className="_reaction_svg" xmlns="http://www.w3.org/2000/svg" width="24" height="21" fill="none" viewBox="0 0 24 21">
                                 <path stroke="#000" strokeLinejoin="round" d="M23 10.5L12.917 1v5.429C3.267 6.429 1 13.258 1 20c2.785-3.52 5.248-5.429 11.917-5.429V20L23 10.5z" />
                             </svg>
