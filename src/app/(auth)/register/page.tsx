@@ -184,7 +184,7 @@ export default function RegisterPage() {
                                                     disabled={loading}
                                                     style={{ opacity: loading ? 0.7 : 1, cursor: loading ? "not-allowed" : "pointer" }}
                                                 >
-                                                    {loading ? "Creating account..." : "Register now"}
+                                                    {loading ? "Creating account..." : "Register"}
                                                 </button>
                                             </div>
                                         </div>

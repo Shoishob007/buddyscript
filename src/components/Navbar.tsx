@@ -24,7 +24,7 @@ export default function Navbar({ currentUser }: NavbarProps) {
         if (loggingOut) return;
         setLoggingOut(true);
         try {
-            await fetch("/api/auth/login", { method: "DELETE" });
+            await fetch("/api/auth/logout", { method: "POST" });
             router.push("/login");
             router.refresh();
         } finally {
@@ -113,32 +113,30 @@ export default function Navbar({ currentUser }: NavbarProps) {
                             </button>
                         </div>
 
-                        {open && (
-                            <div className="_nav_profile_dropdown _profile_dropdown" style={{ display: "block", right: 0, left: "auto" }}>
-                                <div className="_nav_profile_dropdown_info">
-                                    <div className="_nav_profile_dropdown_info_txt">
-                                        <h4 className="_nav_dropdown_title">
-                                            {currentUser.firstName} {currentUser.lastName}
-                                        </h4>
-                                        <span className="_nav_drop_profile">Signed in</span>
-                                    </div>
+                        <div className={`_nav_profile_dropdown _profile_dropdown${open ? " show" : ""}`} style={{ right: 0, left: "auto" }}>
+                            <div className="_nav_profile_dropdown_info">
+                                <div className="_nav_profile_dropdown_info_txt">
+                                    <h4 className="_nav_dropdown_title">
+                                        {currentUser.firstName} {currentUser.lastName}
+                                    </h4>
+                                    <span className="_nav_drop_profile">Signed in</span>
                                 </div>
-                                <hr />
-                                <ul className="_nav_dropdown_list">
-                                    <li className="_nav_dropdown_list_item">
-                                        <button
-                                            type="button"
-                                            className="_nav_dropdown_link"
-                                            onClick={logout}
-                                            style={{ width: "100%", background: "transparent", border: "none", textAlign: "left" }}
-                                        >
-                                            <div className="_nav_drop_info">Log Out</div>
-                                            <span className="_nav_drop_btn_link">{loggingOut ? "..." : ">"}</span>
-                                        </button>
-                                    </li>
-                                </ul>
                             </div>
-                        )}
+                            <hr />
+                            <ul className="_nav_dropdown_list">
+                                <li className="_nav_dropdown_list_item">
+                                    <button
+                                        type="button"
+                                        className="_nav_dropdown_link"
+                                        onClick={logout}
+                                        style={{ width: "100%", background: "transparent", border: "none", textAlign: "left" }}
+                                    >
+                                        <div className="_nav_drop_info">Log Out</div>
+                                        <span className="_nav_drop_btn_link">{loggingOut ? "..." : ">"}</span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>

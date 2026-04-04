@@ -135,6 +135,18 @@ function ReplyItem({
                             <span>{reply.text}</span>
                         </p>
                     </div>
+                    {likes.length > 0 && (
+                        <div className="_total_reactions">
+                            <div className="_total_react">
+                                <span className="_reaction_like">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <span className="_total">{likes.length}</span>
+                        </div>
+                    )}
                     <div className="_comment_reply">
                         <div className="_comment_reply_num">
                             <ul className="_comment_reply_list">
@@ -147,7 +159,7 @@ function ReplyItem({
                                         }}
                                         onClick={toggleLike}
                                     >
-                                        Like ({likes.length})
+                                        Like.
                                     </span>
                                 </li>
                                 <li>
@@ -236,6 +248,18 @@ function CommentItem({
                             <span>{comment.text}</span>
                         </p>
                     </div>
+                    {likes.length > 0 && (
+                        <div className="_total_reactions">
+                            <div className="_total_react">
+                                <span className="_reaction_like">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <span className="_total">{likes.length}</span>
+                        </div>
+                    )}
                     <div className="_comment_reply">
                         <div className="_comment_reply_num">
                             <ul className="_comment_reply_list">
@@ -248,7 +272,7 @@ function CommentItem({
                                         }}
                                         onClick={toggleLike}
                                     >
-                                        Like ({likes.length})
+                                        Like.
                                     </span>
                                 </li>
                                 <li>
@@ -256,7 +280,7 @@ function CommentItem({
                                         style={{ cursor: "pointer" }}
                                         onClick={() => setShowReplyBox(!showReplyBox)}
                                     >
-                                        Reply
+                                        Reply.
                                     </span>
                                 </li>
                                 <li>
@@ -321,6 +345,7 @@ export default function PostCard({ post, currentUserId }: PostCardProps) {
     const shareCount = 0;
     const [comments, setComments] = useState<Comment[]>([]);
     const [showComments, setShowComments] = useState(false);
+    const [showAllComments, setShowAllComments] = useState(false);
     const [commentText, setCommentText] = useState("");
     const [loadingComments, setLoadingComments] = useState(false);
     const [submittingComment, setSubmittingComment] = useState(false);
@@ -377,8 +402,10 @@ export default function PostCard({ post, currentUserId }: PostCardProps) {
         if (!showComments && comments.length === 0) {
             await loadComments();
         }
-        setShowComments(!showComments);
-        if (!showComments) {
+        const next = !showComments;
+        setShowComments(next);
+        if (!next) setShowAllComments(false);
+        if (next) {
             setTimeout(() => commentRef.current?.focus(), 100);
         }
     }
@@ -466,16 +493,28 @@ export default function PostCard({ post, currentUserId }: PostCardProps) {
             <div className="_feed_inner_timeline_total_reacts _padd_r24 _padd_l24 _mar_b26" style={{ marginTop: 12 }}>
                 <div
                     className="_feed_inner_timeline_total_reacts_image"
-                    style={{ cursor: "pointer" }}
-                    onClick={fetchLikers}
-                    title="See who liked this"
+                    style={{ cursor: likeCount > 0 ? "pointer" : "default" }}
+                    onClick={likeCount > 0 ? fetchLikers : undefined}
+                    title={likeCount > 0 ? "See who liked this" : undefined}
                 >
-                    <Image src="/assets/images/react_img1.png" alt="React" width={18} height={18} className="_react_img1" />
-                    <Image src="/assets/images/react_img2.png" alt="React" width={18} height={18} className="_react_img" />
-                    <Image src="/assets/images/react_img3.png" alt="React" width={18} height={18} className="_react_img _rect_img_mbl_none" />
-                    <Image src="/assets/images/react_img4.png" alt="React" width={18} height={18} className="_react_img _rect_img_mbl_none" />
-                    <Image src="/assets/images/react_img5.png" alt="React" width={18} height={18} className="_react_img _rect_img_mbl_none" />
-                    <p className="_feed_inner_timeline_total_reacts_para">{likeCount}+</p>
+                    {likeCount > 0 && (() => {
+                        const reactImages = [
+                            { src: "/assets/images/react_img1.png", className: "_react_img1" },
+                            { src: "/assets/images/react_img2.png", className: "_react_img" },
+                            { src: "/assets/images/react_img3.png", className: "_react_img _rect_img_mbl_none" },
+                            { src: "/assets/images/react_img4.png", className: "_react_img _rect_img_mbl_none" },
+                            { src: "/assets/images/react_img5.png", className: "_react_img _rect_img_mbl_none" },
+                        ];
+                        const visible = Math.min(likeCount, 5);
+                        return reactImages.slice(0, visible).map((img, i) => (
+                            <Image key={i} src={img.src} alt="React" width={18} height={18} className={img.className} />
+                        ));
+                    })()}
+                    {likeCount > 0 && (
+                        <p className="_feed_inner_timeline_total_reacts_para">
+                            {likeCount > 5 ? `${likeCount}+` : likeCount}
+                        </p>
+                    )}
                 </div>
                 <div className="_feed_inner_timeline_total_reacts_txt">
                     <p className="_feed_inner_timeline_total_reacts_para1" style={{ cursor: "pointer" }} onClick={toggleComments}>
@@ -635,9 +674,24 @@ export default function PostCard({ post, currentUserId }: PostCardProps) {
                         {loadingComments && (
                             <p style={{ padding: "8px 24px", color: "#999", fontSize: 14 }}>Loading comments...</p>
                         )}
-                        {comments.map((c) => (
-                            <CommentItem key={c.id} comment={c} currentUserId={currentUserId} />
-                        ))}
+                        {!loadingComments && comments.length > 0 && (
+                            <>
+                                {comments.length > 1 && !showAllComments && (
+                                    <div className="_previous_comment" style={{ padding: "6px 24px" }}>
+                                        <button
+                                            type="button"
+                                            className="_previous_comment_txt"
+                                            onClick={() => setShowAllComments(true)}
+                                        >
+                                            View {comments.length - 1} previous comment{comments.length - 1 > 1 ? "s" : ""}
+                                        </button>
+                                    </div>
+                                )}
+                                {(showAllComments ? comments : [comments[comments.length - 1]]).map((c) => (
+                                    <CommentItem key={c.id} comment={c} currentUserId={currentUserId} />
+                                ))}
+                            </>
+                        )}
                         {!loadingComments && comments.length === 0 && (
                             <p style={{ padding: "8px 24px", color: "#999", fontSize: 14 }}>
                                 No comments yet. Be the first!

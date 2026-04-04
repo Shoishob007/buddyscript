@@ -143,7 +143,7 @@ export default function LoginPage() {
                                                     disabled={loading}
                                                     style={{ opacity: loading ? 0.7 : 1, cursor: loading ? "not-allowed" : "pointer" }}
                                                 >
-                                                    {loading ? "Logging in..." : "Login now"}
+                                                    {loading ? "Logging in..." : "Login"}
                                                 </button>
                                             </div>
                                         </div>
