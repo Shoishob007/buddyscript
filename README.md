@@ -43,7 +43,7 @@ Core functionality:
 
 1. Node.js 20+
 2. npm 10+
-3. PostgreSQL 14+ running locally
+3. A Neon PostgreSQL project/database
 
 ## Environment Setup
 
@@ -53,15 +53,11 @@ Core functionality:
 cp .env.example .env
 ```
 
-2. Update values in `.env` for your local PostgreSQL instance.
+2. Update values in `.env` with your Neon and Cloudinary credentials.
 
 Minimum required variables:
 
-- `DB_USER`
-- `DB_PASSWORD`
-- `DB_HOST`
-- `DB_PORT`
-- `DB_NAME`
+- `DATABASE_URL`
 - `JWT_SECRET`
 - `CLOUDINARY_CLOUD_NAME`
 - `CLOUDINARY_API_KEY`
@@ -134,7 +130,7 @@ This project should be deployed as a full-stack Next.js application, not as a fr
 2. Use a managed PostgreSQL provider such as Neon.
 3. Configure these environment variables in Vercel:
 
-- `DATABASE_URL` or the individual database variables
+- `DATABASE_URL`
 - `JWT_SECRET`
 - `CLOUDINARY_CLOUD_NAME`
 - `CLOUDINARY_API_KEY`

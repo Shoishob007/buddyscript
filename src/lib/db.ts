@@ -3,32 +3,13 @@ import { Pool, QueryResult, QueryResultRow } from "pg";
 const globalForDb = globalThis as unknown as { dbPool?: Pool };
 
 function buildConnectionString() {
-  if (process.env.DATABASE_URL) {
-    return process.env.DATABASE_URL;
-  }
-
-  const user = process.env.DB_USER;
-  const password = process.env.DB_PASSWORD;
-  const host = process.env.DB_HOST || "localhost";
-  const port = process.env.DB_PORT || "5432";
-  const database = process.env.DB_NAME;
-
-  if (!user || password === undefined || !database) {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
     throw new Error(
-      "Database configuration is missing. Set DATABASE_URL or DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, and DB_NAME.",
+      "DATABASE_URL is required. Set your Neon Postgres connection string in environment variables.",
     );
   }
-
-  if (
-    password === "YOUR_LOCAL_POSTGRES_PASSWORD" ||
-    password === "YOUR_POSTGRES_PASSWORD"
-  ) {
-    throw new Error(
-      "DB_PASSWORD is still a placeholder. Set your real local PostgreSQL password in .env.",
-    );
-  }
-
-  return `postgresql://${encodeURIComponent(user)}:${encodeURIComponent(password)}@${host}:${port}/${database}`;
+  return connectionString;
 }
 
 export const db =

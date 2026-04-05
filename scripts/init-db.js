@@ -44,23 +44,13 @@ function loadEnvConfig() {
 loadEnvConfig();
 
 function getConnectionString() {
-    if (process.env.DATABASE_URL) {
-        return process.env.DATABASE_URL;
-    }
-
-    const user = process.env.DB_USER;
-    const password = process.env.DB_PASSWORD;
-    const host = process.env.DB_HOST || "localhost";
-    const port = process.env.DB_PORT || "5432";
-    const database = process.env.DB_NAME;
-
-    if (!user || password === undefined || !database) {
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) {
         throw new Error(
-            "Database configuration is missing. Set DATABASE_URL or DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, and DB_NAME.",
+            "DATABASE_URL is required. Set your Neon Postgres connection string in .env or .env.local.",
         );
     }
-
-    return `postgresql://${encodeURIComponent(user)}:${encodeURIComponent(password)}@${host}:${port}/${database}`;
+    return connectionString;
 }
 
 function parseConnectionString() {
@@ -107,7 +97,13 @@ async function applySchema() {
 
 (async function main() {
     try {
-        await ensureDatabaseExists();
+        try {
+            await ensureDatabaseExists();
+        } catch (error) {
+            console.log(
+                "Skipping database creation check (managed database likely does not allow CREATE DATABASE).",
+            );
+        }
         await applySchema();
     } catch (error) {
         console.error(error.message || error);
