@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getSessionUserFromRequest } from "@/lib/auth";
-import { writeFile } from "fs/promises";
+import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
+import os from "os";
+import { query } from "@/lib/db";
+
+const runtimeUploadDir =
+  process.env.UPLOAD_DIR || path.join(os.tmpdir(), "buddyscript-uploads");
 
 // GET /api/posts - list public posts + author's private posts
 export async function GET(req: NextRequest) {
@@ -16,30 +20,96 @@ export async function GET(req: NextRequest) {
   const cursor = searchParams.get("cursor");
   const take = 10;
 
-  const posts = await prisma.post.findMany({
-    where: {
-      OR: [{ visibility: "public" }, { authorId: session.userId }],
-    },
-    orderBy: { createdAt: "desc" },
-    take,
-    ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
-    include: {
-      author: {
-        select: { id: true, firstName: true, lastName: true, avatar: true },
-      },
-      likes: {
-        select: {
-          userId: true,
-          user: {
-            select: { id: true, firstName: true, lastName: true, avatar: true },
-          },
+  const cursorRes = cursor
+    ? await query<{ createdAt: Date }>(
+        `SELECT "createdAt" FROM "Post" WHERE id = $1 LIMIT 1`,
+        [cursor],
+      )
+    : null;
+
+  const cursorCreatedAt = cursorRes?.rows[0]?.createdAt;
+
+  const postsRes = await query<{
+    id: string;
+    text: string;
+    imageUrl: string | null;
+    visibility: string;
+    createdAt: Date;
+    updatedAt: Date;
+    authorId: string;
+    authorFirstName: string;
+    authorLastName: string;
+    authorAvatar: string | null;
+    commentCount: string;
+  }>(
+    cursor && cursorCreatedAt
+      ? `SELECT p.id, p.text, p."imageUrl", p.visibility, p."createdAt", p."updatedAt", p."authorId",
+                u."firstName" AS "authorFirstName", u."lastName" AS "authorLastName", u.avatar AS "authorAvatar",
+                (SELECT COUNT(*)::text FROM "Comment" c WHERE c."postId" = p.id) AS "commentCount"
+         FROM "Post" p
+         JOIN "User" u ON u.id = p."authorId"
+         WHERE (p.visibility = 'public' OR p."authorId" = $1)
+           AND (p."createdAt" < $2 OR (p."createdAt" = $2 AND p.id < $3))
+         ORDER BY p."createdAt" DESC, p.id DESC
+         LIMIT $4`
+      : `SELECT p.id, p.text, p."imageUrl", p.visibility, p."createdAt", p."updatedAt", p."authorId",
+                u."firstName" AS "authorFirstName", u."lastName" AS "authorLastName", u.avatar AS "authorAvatar",
+                (SELECT COUNT(*)::text FROM "Comment" c WHERE c."postId" = p.id) AS "commentCount"
+         FROM "Post" p
+         JOIN "User" u ON u.id = p."authorId"
+         WHERE (p.visibility = 'public' OR p."authorId" = $1)
+         ORDER BY p."createdAt" DESC, p.id DESC
+         LIMIT $2`,
+    cursor && cursorCreatedAt
+      ? [session.userId, cursorCreatedAt, cursor, take]
+      : [session.userId, take],
+  );
+
+  const posts = await Promise.all(
+    postsRes.rows.map(async (p: (typeof postsRes.rows)[number]) => {
+      const likesRes = await query<{
+        userId: string;
+        id: string;
+        firstName: string;
+        lastName: string;
+        avatar: string | null;
+      }>(
+        `SELECT pl."userId", u.id, u."firstName", u."lastName", u.avatar
+         FROM "PostLike" pl
+         JOIN "User" u ON u.id = pl."userId"
+         WHERE pl."postId" = $1
+         ORDER BY pl."createdAt" DESC
+         LIMIT 5`,
+        [p.id],
+      );
+
+      return {
+        id: p.id,
+        text: p.text,
+        imageUrl: p.imageUrl,
+        visibility: p.visibility,
+        createdAt: p.createdAt,
+        updatedAt: p.updatedAt,
+        authorId: p.authorId,
+        author: {
+          id: p.authorId,
+          firstName: p.authorFirstName,
+          lastName: p.authorLastName,
+          avatar: p.authorAvatar,
         },
-        orderBy: { createdAt: "desc" },
-        take: 5,
-      },
-      _count: { select: { comments: true } },
-    },
-  });
+        likes: likesRes.rows.map((l: (typeof likesRes.rows)[number]) => ({
+          userId: l.userId,
+          user: {
+            id: l.id,
+            firstName: l.firstName,
+            lastName: l.lastName,
+            avatar: l.avatar,
+          },
+        })),
+        _count: { comments: Number(p.commentCount || 0) },
+      };
+    }),
+  );
 
   const nextCursor = posts.length === take ? posts[posts.length - 1].id : null;
 
@@ -91,40 +161,61 @@ export async function POST(req: NextRequest) {
       const ext = image.name.split(".").pop() || "jpg";
       const filename = `${randomUUID()}.${ext}`;
       const bytes = await image.arrayBuffer();
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-      await writeFile(path.join(uploadDir, filename), Buffer.from(bytes));
-      imageUrl = `/uploads/${filename}`;
+      await mkdir(runtimeUploadDir, { recursive: true });
+      await writeFile(
+        path.join(runtimeUploadDir, filename),
+        Buffer.from(bytes),
+      );
+      imageUrl = `/api/upload/${filename}`;
     }
 
-    const post = await prisma.post.create({
-      data: {
-        text: text || "",
-        imageUrl,
-        visibility,
-        authorId: session.userId,
+    const postId = randomUUID();
+
+    await query(
+      `INSERT INTO "Post" (id, text, "imageUrl", visibility, "createdAt", "updatedAt", "authorId")
+       VALUES ($1, $2, $3, $4, NOW(), NOW(), $5)`,
+      [postId, text || "", imageUrl, visibility, session.userId],
+    );
+
+    const postRes = await query<{
+      id: string;
+      text: string;
+      imageUrl: string | null;
+      visibility: string;
+      createdAt: Date;
+      updatedAt: Date;
+      authorId: string;
+      authorFirstName: string;
+      authorLastName: string;
+      authorAvatar: string | null;
+    }>(
+      `SELECT p.id, p.text, p."imageUrl", p.visibility, p."createdAt", p."updatedAt", p."authorId",
+              u."firstName" AS "authorFirstName", u."lastName" AS "authorLastName", u.avatar AS "authorAvatar"
+       FROM "Post" p
+       JOIN "User" u ON u.id = p."authorId"
+       WHERE p.id = $1
+       LIMIT 1`,
+      [postId],
+    );
+
+    const p = postRes.rows[0];
+    const post = {
+      id: p.id,
+      text: p.text,
+      imageUrl: p.imageUrl,
+      visibility: p.visibility,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+      authorId: p.authorId,
+      author: {
+        id: p.authorId,
+        firstName: p.authorFirstName,
+        lastName: p.authorLastName,
+        avatar: p.authorAvatar,
       },
-      include: {
-        author: {
-          select: { id: true, firstName: true, lastName: true, avatar: true },
-        },
-        likes: {
-          select: {
-            userId: true,
-            user: {
-              select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                avatar: true,
-              },
-            },
-          },
-          orderBy: { createdAt: "desc" },
-          take: 5,
-        },
-        _count: { select: { comments: true } },
-      },
-    });
+      likes: [],
+      _count: { comments: 0 },
+    };
 
     return NextResponse.json({ post }, { status: 201 });
   } catch (error) {

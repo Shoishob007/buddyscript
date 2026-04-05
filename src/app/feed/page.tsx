@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import PostList from "@/components/PostList";
 import ThemeToggle from "@/components/ThemeToggle";
 import { getSessionUser } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { query } from "@/lib/db";
 
 export default async function FeedPage() {
     const session = await getSessionUser();
@@ -12,16 +12,21 @@ export default async function FeedPage() {
         redirect("/login");
     }
 
-    const currentUser = await prisma.user.findUnique({
-        where: { id: session.userId },
-        select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatar: true,
-            email: true,
-        },
-    });
+    const userRes = await query<{
+        id: string;
+        firstName: string;
+        lastName: string;
+        avatar: string | null;
+        email: string;
+    }>(
+        `SELECT id, "firstName", "lastName", avatar, email
+         FROM "User"
+         WHERE id = $1
+         LIMIT 1`,
+        [session.userId]
+    );
+
+    const currentUser = userRes.rows[0] ?? null;
 
     if (!currentUser) {
         redirect("/login");

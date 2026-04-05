@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
 import { signToken } from "@/lib/auth";
+import { query } from "@/lib/db";
+import { randomUUID } from "crypto";
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,8 +30,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) {
+    const existing = await query<{ id: string }>(
+      `SELECT id FROM "User" WHERE email = $1 LIMIT 1`,
+      [email],
+    );
+    if (existing.rows[0]) {
       return NextResponse.json(
         { error: "Email already in use" },
         { status: 409 },
@@ -38,10 +42,21 @@ export async function POST(req: NextRequest) {
     }
 
     const hashed = await bcrypt.hash(password, 12);
-    const user = await prisma.user.create({
-      data: { firstName, lastName, email, password: hashed },
-      select: { id: true, email: true, firstName: true, lastName: true },
-    });
+    const userId = randomUUID();
+
+    const userRes = await query<{
+      id: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+    }>(
+      `INSERT INTO "User" (id, "firstName", "lastName", email, password, "createdAt", "updatedAt")
+       VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+       RETURNING id, email, "firstName", "lastName"`,
+      [userId, firstName, lastName, email, hashed],
+    );
+
+    const user = userRes.rows[0];
 
     const token = await signToken({ userId: user.id, email: user.email });
 

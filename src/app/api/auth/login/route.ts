@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
 import { signToken } from "@/lib/auth";
+import { query } from "@/lib/db";
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,7 +14,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const userRes = await query<{
+      id: string;
+      email: string;
+      firstName: string;
+      lastName: string;
+      avatar: string | null;
+      password: string;
+    }>(
+      `SELECT id, email, "firstName", "lastName", avatar, password
+       FROM "User"
+       WHERE email = $1
+       LIMIT 1`,
+      [email],
+    );
+
+    const user = userRes.rows[0];
     if (!user) {
       return NextResponse.json(
         { error: "Invalid credentials" },

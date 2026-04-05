@@ -2,8 +2,14 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
 
+const jwtSecret = process.env.JWT_SECRET;
+
+if (process.env.NODE_ENV === "production" && !jwtSecret) {
+  throw new Error("JWT_SECRET is required in production");
+}
+
 const SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "buddyscript-secret-key-change-in-production",
+  jwtSecret || "dev-only-jwt-secret-change-me",
 );
 
 export async function signToken(payload: { userId: string; email: string }) {
