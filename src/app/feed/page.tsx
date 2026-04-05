@@ -243,6 +243,9 @@ export default async function FeedPage() {
                                         <div className="_right_inner_area_info _padd_t24 _padd_b24 _padd_r24 _padd_l24 _b_radious6 _feed_inner_area">
                                             <div className="_right_inner_area_info_content _mar_b24">
                                                 <h4 className="_right_inner_area_info_content_title _title5">You Might Like</h4>
+                                                <span className="_right_inner_area_info_content_txt">
+                                                    <a className="_right_inner_area_info_content_txt_link" href="#0">See All</a>
+                                                </span>
                                             </div>
                                             <div className="_right_inner_area_info_ppl">
                                                 <div className="_right_inner_area_info_box">
@@ -266,6 +269,9 @@ export default async function FeedPage() {
                                         <div className="_feed_right_inner_area_card _padd_t24 _padd_b6 _padd_r24 _padd_l24 _b_radious6 _feed_inner_area">
                                             <div className="_feed_right_inner_area_card_content _mar_b24">
                                                 <h4 className="_feed_right_inner_area_card_content_title _title5">Your Friends</h4>
+                                                <span className="_feed_right_inner_area_card_content_txt">
+                                                    <a className="_feed_right_inner_area_card_content_txt_link" href="#0">See All</a>
+                                                </span>
                                             </div>
                                             <div className="_feed_right_inner_area_card_ppl">
                                                 <div className="_feed_right_inner_area_card_ppl_box">

@@ -76,25 +76,41 @@ export default function Navbar({ currentUser }: NavbarProps) {
                                 </svg>
                             </Link>
                         </li>
+                        <li className="nav-item _header_nav_item">
+                            <a className="nav-link _header_nav_link" aria-current="page" href="#0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="23" height="22" fill="none" viewBox="0 0 23 22">
+                                    <path fill="#000" fillOpacity=".6" fillRule="evenodd" d="M11.43 0c2.96 0 5.743 1.143 7.833 3.22 4.32 4.29 4.32 11.271 0 15.562C17.145 20.886 14.293 22 11.405 22c-1.575 0-3.16-.33-4.643-1.012-.437-.174-.847-.338-1.14-.338-.338.002-.793.158-1.232.308-.9.307-2.022.69-2.852-.131-.826-.822-.445-1.932-.138-2.826.152-.44.307-.895.307-1.239 0-.282-.137-.642-.347-1.161C-.57 11.46.322 6.47 3.596 3.22A11.04 11.04 0 0111.43 0zm0 1.535A9.5 9.5 0 004.69 4.307a9.463 9.463 0 00-1.91 10.686c.241.592.474 1.17.474 1.77 0 .598-.207 1.201-.39 1.733-.15.439-.378 1.1-.231 1.245.143.147.813-.085 1.255-.235.53-.18 1.133-.387 1.73-.391.597 0 1.161.225 1.758.463 3.655 1.679 7.98.915 10.796-1.881 3.716-3.693 3.716-9.7 0-13.391a9.5 9.5 0 00-6.74-2.77zm4.068 8.867c.57 0 1.03.458 1.03 1.024 0 .566-.46 1.023-1.03 1.023a1.023 1.023 0 11-.01-2.047h.01zm-4.131 0c.568 0 1.03.458 1.03 1.024 0 .566-.462 1.023-1.03 1.023a1.03 1.03 0 01-1.035-1.024c0-.566.455-1.023 1.025-1.023h.01zm-4.132 0c.568 0 1.03.458 1.03 1.024 0 .566-.462 1.023-1.03 1.023a1.022 1.022 0 11-.01-2.047h.01z" clipRule="evenodd" />
+                                </svg>
+                                <span className="_counting">2</span>
+                            </a>
+                        </li>
+                        <li className="nav-item _header_nav_item">
+                            <span className="nav-link _header_nav_link _header_notify_btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="22" fill="none" viewBox="0 0 20 22">
+                                    <path fill="#000" fillOpacity=".6" fillRule="evenodd" d="M7.547 19.55c.533.59 1.218.915 1.93.915.714 0 1.403-.324 1.938-.916a.777.777 0 011.09-.056c.318.284.344.77.058 1.084-.832.917-1.927 1.423-3.086 1.423h-.002c-1.155-.001-2.248-.506-3.077-1.424a.762.762 0 01.057-1.083.774.774 0 011.092.057zM9.527 0c4.58 0 7.657 3.543 7.657 6.85 0 1.702.436 2.424.899 3.19.457.754.976 1.612.976 3.233-.36 4.14-4.713 4.478-9.531 4.478-4.818 0-9.172-.337-9.528-4.413-.003-1.686.515-2.544.973-3.299l.161-.27c.398-.679.737-1.417.737-2.918C1.871 3.543 4.948 0 9.528 0zm0 1.535c-3.6 0-6.11 2.802-6.11 5.316 0 2.127-.595 3.11-1.12 3.978-.422.697-.755 1.247-.755 2.444.173 1.93 1.455 2.944 7.986 2.944 6.494 0 7.817-1.06 7.988-3.01-.003-1.13-.336-1.681-.757-2.378-.526-.868-1.12-1.851-1.12-3.978 0-2.514-2.51-5.316-6.111-5.316z" clipRule="evenodd" />
+                                </svg>
+                                <span className="_counting">6</span>
+                            </span>
+                        </li>
                     </ul>
 
                     <div className="_header_nav_profile" style={{ position: "relative" }}>
                         <div className="_header_nav_profile_image">
                             {currentUser.avatar ? (
-                                <Image src={currentUser.avatar} alt="Profile" width={40} height={40} className="_nav_profile_img" />
+                                <Image src={currentUser.avatar} alt="Profile" width={24} height={24} className="_nav_profile_img" style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover" }} />
                             ) : (
                                 <div
                                     className="_nav_profile_img"
                                     style={{
-                                        width: 40,
-                                        height: 40,
+                                        width: 24,
+                                        height: 24,
                                         borderRadius: "50%",
                                         background: "#1890FF",
                                         color: "#fff",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        fontSize: 14,
+                                        fontSize: 10,
                                         fontWeight: 600,
                                     }}
                                 >
@@ -115,15 +131,71 @@ export default function Navbar({ currentUser }: NavbarProps) {
 
                         <div className={`_nav_profile_dropdown _profile_dropdown${open ? " show" : ""}`} style={{ right: 0, left: "auto" }}>
                             <div className="_nav_profile_dropdown_info">
+                                <div className="_nav_profile_dropdown_image">
+                                    {currentUser.avatar ? (
+                                        <Image src={currentUser.avatar} alt="Profile" width={54} height={54} className="_nav_drop_img" style={{ borderRadius: "50%", objectFit: "cover" }} />
+                                    ) : (
+                                        <div
+                                            className="_nav_drop_img"
+                                            style={{
+                                                borderRadius: "50%",
+                                                background: "#1890FF",
+                                                color: "#fff",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                fontSize: 18,
+                                                fontWeight: 600,
+                                            }}
+                                        >
+                                            {initials}
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="_nav_profile_dropdown_info_txt">
                                     <h4 className="_nav_dropdown_title">
                                         {currentUser.firstName} {currentUser.lastName}
                                     </h4>
-                                    <span className="_nav_drop_profile">Signed in</span>
+                                    <a href="#0" className="_nav_drop_profile">View Profile</a>
                                 </div>
                             </div>
                             <hr />
                             <ul className="_nav_dropdown_list">
+                                <li className="_nav_dropdown_list_item">
+                                    <a href="#0" className="_nav_dropdown_link">
+                                        <div className="_nav_drop_info">
+                                            <span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="19" fill="none" viewBox="0 0 18 19">
+                                                    <path fill="#377DFF" d="M9.584 0c.671 0 1.315.267 1.783.74.468.473.721 1.112.7 1.709l.009.14a.985.985 0 00.136.395c.145.242.382.418.659.488.276.071.57.03.849-.13l.155-.078c1.165-.538 2.563-.11 3.21.991l.58.99a.695.695 0 01.04.081l.055.107c.519 1.089.15 2.385-.838 3.043l-.244.15a1.046 1.046 0 00-.313.339 1.042 1.042 0 00-.11.805c.074.272.255.504.53.66l.158.1c.478.328.823.812.973 1.367.17.626.08 1.292-.257 1.86l-.625 1.022-.094.144c-.735 1.038-2.16 1.355-3.248.738l-.129-.066a1.123 1.123 0 00-.412-.095 1.087 1.087 0 00-.766.31c-.204.2-.317.471-.316.786l-.008.163C11.956 18.022 10.88 19 9.584 19h-1.17c-1.373 0-2.486-1.093-2.484-2.398l-.008-.14a.994.994 0 00-.14-.401 1.066 1.066 0 00-.652-.493 1.12 1.12 0 00-.852.127l-.169.083a2.526 2.526 0 01-1.698.122 2.47 2.47 0 01-1.488-1.154l-.604-1.024-.08-.152a2.404 2.404 0 01.975-3.132l.1-.061c.292-.199.467-.527.467-.877 0-.381-.207-.733-.569-.94l-.147-.092a2.419 2.419 0 01-.724-3.236l.615-.993a2.503 2.503 0 013.366-.912l.126.066c.13.058.269.089.403.09a1.08 1.08 0 001.086-1.068l.008-.185c.049-.57.301-1.106.713-1.513A2.5 2.5 0 018.414 0h1.17zm0 1.375h-1.17c-.287 0-.562.113-.764.312-.179.177-.288.41-.308.628l-.012.29c-.098 1.262-1.172 2.253-2.486 2.253a2.475 2.475 0 01-1.013-.231l-.182-.095a1.1 1.1 0 00-1.488.407l-.616.993a1.05 1.05 0 00.296 1.392l.247.153A2.43 2.43 0 013.181 9.5c0 .802-.401 1.552-1.095 2.023l-.147.091c-.486.276-.674.873-.448 1.342l.053.102.597 1.01c.14.248.374.431.652.509.246.069.51.05.714-.04l.103-.05a2.506 2.506 0 011.882-.248 2.456 2.456 0 011.823 2.1l.02.335c.059.535.52.95 1.079.95h1.17c.566 0 1.036-.427 1.08-.95l.005-.104a2.412 2.412 0 01.726-1.732 2.508 2.508 0 011.779-.713c.331.009.658.082.992.23l.3.15c.469.202 1.026.054 1.309-.344l.068-.105.61-1a1.045 1.045 0 00-.288-1.383l-.257-.16a2.435 2.435 0 01-1.006-1.389 2.393 2.393 0 01.25-1.847c.181-.31.429-.575.752-.795l.152-.095c.485-.278.672-.875.448-1.346l-.067-.127-.012-.027-.554-.945a1.095 1.095 0 00-1.27-.487l-.105.041-.098.049a2.515 2.515 0 01-1.88.259 2.47 2.47 0 01-1.511-1.122 2.367 2.367 0 01-.325-.97l-.012-.24a1.056 1.056 0 00-.307-.774 1.096 1.096 0 00-.779-.323zm-.58 5.02c1.744 0 3.16 1.39 3.16 3.105s-1.416 3.105-3.16 3.105c-1.746 0-3.161-1.39-3.161-3.105s1.415-3.105 3.16-3.105zm0 1.376c-.973 0-1.761.774-1.761 1.729 0 .955.788 1.73 1.76 1.73s1.76-.775 1.76-1.73-.788-1.73-1.76-1.73z" />
+                                                </svg>
+                                            </span>
+                                            Settings
+                                        </div>
+                                        <button type="button" className="_nav_drop_btn_link" tabIndex={-1}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" fill="none" viewBox="0 0 6 10">
+                                                <path fill="#112032" d="M5 5l.354.354L5.707 5l-.353-.354L5 5zM1.354 9.354l4-4-.708-.708-4 4 .708.708zm4-4.708l-4-4-.708.708 4 4 .708-.708z" opacity=".5" />
+                                            </svg>
+                                        </button>
+                                    </a>
+                                </li>
+                                <li className="_nav_dropdown_list_item">
+                                    <a href="#0" className="_nav_dropdown_link">
+                                        <div className="_nav_drop_info">
+                                            <span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+                                                    <path stroke="#377DFF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10 19a9 9 0 100-18 9 9 0 000 18z" />
+                                                    <path stroke="#377DFF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7.38 7.3a2.7 2.7 0 015.248.9c0 1.8-2.7 2.7-2.7 2.7M10 14.5h.009" />
+                                                </svg>
+                                            </span>
+                                            Help & Support
+                                        </div>
+                                        <button type="button" className="_nav_drop_btn_link" tabIndex={-1}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" fill="none" viewBox="0 0 6 10">
+                                                <path fill="#112032" d="M5 5l.354.354L5.707 5l-.353-.354L5 5zM1.354 9.354l4-4-.708-.708-4 4 .708.708zm4-4.708l-4-4-.708.708 4 4 .708-.708z" opacity=".5" />
+                                            </svg>
+                                        </button>
+                                    </a>
+                                </li>
                                 <li className="_nav_dropdown_list_item">
                                     <button
                                         type="button"
@@ -131,8 +203,19 @@ export default function Navbar({ currentUser }: NavbarProps) {
                                         onClick={logout}
                                         style={{ width: "100%", background: "transparent", border: "none", textAlign: "left" }}
                                     >
-                                        <div className="_nav_drop_info">Log Out</div>
-                                        <span className="_nav_drop_btn_link">{loggingOut ? "..." : ">"}</span>
+                                        <div className="_nav_drop_info">
+                                            <span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="none" viewBox="0 0 19 19">
+                                                    <path stroke="#377DFF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6.667 18H2.889A1.889 1.889 0 011 16.111V2.89A1.889 1.889 0 012.889 1h3.778M13.277 14.222L18 9.5l-4.723-4.722M18 9.5H6.667" />
+                                                </svg>
+                                            </span>
+                                            {loggingOut ? "Logging out..." : "Log Out"}
+                                        </div>
+                                        <span className="_nav_drop_btn_link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" fill="none" viewBox="0 0 6 10">
+                                                <path fill="#112032" d="M5 5l.354.354L5.707 5l-.353-.354L5 5zM1.354 9.354l4-4-.708-.708-4 4 .708.708zm4-4.708l-4-4-.708.708 4 4 .708-.708z" opacity=".5" />
+                                            </svg>
+                                        </span>
                                     </button>
                                 </li>
                             </ul>

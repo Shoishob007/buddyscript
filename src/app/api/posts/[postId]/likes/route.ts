@@ -41,7 +41,9 @@ export async function POST(
     const likers = await prisma.postLike.findMany({
       where: { postId },
       include: {
-        user: { select: { id: true, firstName: true, lastName: true } },
+        user: {
+          select: { id: true, firstName: true, lastName: true, avatar: true },
+        },
       },
       take: 5,
       orderBy: { createdAt: "desc" },

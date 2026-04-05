@@ -27,7 +27,16 @@ export async function GET(req: NextRequest) {
       author: {
         select: { id: true, firstName: true, lastName: true, avatar: true },
       },
-      likes: { select: { userId: true } },
+      likes: {
+        select: {
+          userId: true,
+          user: {
+            select: { id: true, firstName: true, lastName: true, avatar: true },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+      },
       _count: { select: { comments: true } },
     },
   });
@@ -98,7 +107,21 @@ export async function POST(req: NextRequest) {
         author: {
           select: { id: true, firstName: true, lastName: true, avatar: true },
         },
-        likes: { select: { userId: true } },
+        likes: {
+          select: {
+            userId: true,
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+              },
+            },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 5,
+        },
         _count: { select: { comments: true } },
       },
     });

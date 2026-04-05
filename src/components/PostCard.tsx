@@ -33,7 +33,7 @@ interface Post {
     visibility: string;
     createdAt: string;
     author: User;
-    likes: { userId: string }[];
+    likes: { userId: string; user?: User }[];
     _count: { comments: number };
 }
 
@@ -351,11 +351,17 @@ export default function PostCard({ post, currentUserId }: PostCardProps) {
     const [submittingComment, setSubmittingComment] = useState(false);
     const [liking, setLiking] = useState(false);
     const [showLikers, setShowLikers] = useState(false);
-    const [likers, setLikers] = useState<User[]>([]);
+    const [likers, setLikers] = useState<User[]>(
+        post.likes
+            .map((l) => l.user)
+            .filter((u): u is User => Boolean(u))
+    );
 
     const commentRef = useRef<HTMLTextAreaElement>(null);
 
     const liked = likes.some((l) => l.userId === currentUserId);
+    const visibleReactors = likers.slice(0, 5);
+    const extraReactors = Math.max(0, likeCount - visibleReactors.length);
 
     async function toggleLike() {
         if (liking) return;
@@ -368,7 +374,11 @@ export default function PostCard({ post, currentUserId }: PostCardProps) {
                 setLikes((prev) => (data.liked
                     ? [...prev, { userId: currentUserId }]
                     : prev.filter((l) => l.userId !== currentUserId)));
-                if (data.likers) setLikers(data.likers);
+                if (data.likers) {
+                    setLikers(data.likers);
+                } else if (!data.liked) {
+                    setLikers((prev) => prev.filter((u) => u.id !== currentUserId));
+                }
             }
         } finally {
             setLiking(false);
@@ -497,23 +507,53 @@ export default function PostCard({ post, currentUserId }: PostCardProps) {
                     onClick={likeCount > 0 ? fetchLikers : undefined}
                     title={likeCount > 0 ? "See who liked this" : undefined}
                 >
-                    {likeCount > 0 && (() => {
-                        const reactImages = [
-                            { src: "/assets/images/react_img1.png", className: "_react_img1" },
-                            { src: "/assets/images/react_img2.png", className: "_react_img" },
-                            { src: "/assets/images/react_img3.png", className: "_react_img _rect_img_mbl_none" },
-                            { src: "/assets/images/react_img4.png", className: "_react_img _rect_img_mbl_none" },
-                            { src: "/assets/images/react_img5.png", className: "_react_img _rect_img_mbl_none" },
-                        ];
-                        const visible = Math.min(likeCount, 5);
-                        return reactImages.slice(0, visible).map((img, i) => (
-                            <Image key={i} src={img.src} alt="React" width={18} height={18} className={img.className} />
-                        ));
-                    })()}
-                    {likeCount > 0 && (
-                        <p className="_feed_inner_timeline_total_reacts_para">
-                            {likeCount > 5 ? `${likeCount}+` : likeCount}
-                        </p>
+                    {visibleReactors.map((u, i) => {
+                        const initials = `${u.firstName[0] ?? ""}${u.lastName[0] ?? ""}`.toUpperCase();
+                        if (u.avatar) {
+                            return (
+                                <Image
+                                    key={u.id}
+                                    src={u.avatar}
+                                    alt={`${u.firstName} ${u.lastName}`}
+                                    width={20}
+                                    height={20}
+                                    style={{
+                                        width: 20,
+                                        height: 20,
+                                        borderRadius: "50%",
+                                        objectFit: "cover",
+                                        border: "2px solid #fff",
+                                        marginLeft: i === 0 ? 0 : -8,
+                                    }}
+                                />
+                            );
+                        }
+                        return (
+                            <div
+                                key={u.id}
+                                title={`${u.firstName} ${u.lastName}`}
+                                style={{
+                                    width: 20,
+                                    height: 20,
+                                    borderRadius: "50%",
+                                    background: "#1890FF",
+                                    color: "#fff",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontSize: 9,
+                                    fontWeight: 600,
+                                    border: "2px solid #fff",
+                                    marginLeft: i === 0 ? 0 : -8,
+                                    lineHeight: 1,
+                                }}
+                            >
+                                {initials || "?"}
+                            </div>
+                        );
+                    })}
+                    {extraReactors > 0 && (
+                        <p className="_feed_inner_timeline_total_reacts_para">+{extraReactors}</p>
                     )}
                 </div>
                 <div className="_feed_inner_timeline_total_reacts_txt">
