@@ -1,39 +1,110 @@
-# BuddyScript Implementation Summary
+# BuddyScript
 
-## Database migration completed
+BuddyScript is a small social feed application built with Next.js and PostgreSQL. Users can register, log in, create posts (with optional image uploads), like content, and engage through comments and replies.
 
-The application was migrated from SQLite/Prisma runtime usage to direct PostgreSQL access using the `pg` driver.
+## Project Overview
 
-Implemented changes:
+Core functionality:
 
-1. Runtime Prisma access was removed from auth, feed, posts, comments, replies, and likes flows.
-2. A shared PostgreSQL connection pool was added.
-3. A plain SQL schema file was added for direct database bootstrap.
-4. A database init script was added to create the BuddyScript database and apply schema.
-5. Local environment database URLs were aligned to PostgreSQL usage.
+1. User authentication (register, login, logout)
+2. Feed with posts and media support
+3. Nested engagement model (likes, comments, replies)
+4. Server-side API routes for all core actions
+5. PostgreSQL-backed persistence with SQL bootstrap
 
-## Upload handling improved
+## Tech Stack
 
-Upload writes were moved out of the repository path so generated files no longer appear in the codebase.
+1. Next.js 16 (App Router)
+2. React 19
+3. TypeScript
+4. PostgreSQL
+5. `pg` for database access
+6. JWT auth with `jose`
+7. `bcryptjs` for password hashing
+8. ESLint for linting
 
-Implemented changes:
+## Tradeoffs and Design Decisions
 
-1. Post image files are now stored in runtime upload directory (`UPLOAD_DIR` env or OS temp directory fallback).
-2. Images are served through API endpoint: `/api/upload/[filename]`.
-3. Repository ignore rules were updated for upload-related paths.
+1. Direct SQL (`pg`) over ORM
+   - Pros: Full SQL control, fewer runtime abstractions, predictable queries.
+   - Tradeoff: More manual query and schema management.
+2. JWT cookie sessions
+   - Pros: Simple stateless session handling and easy API integration.
+   - Tradeoff: Token invalidation strategy is simpler than a full session store.
+3. File uploads served through API route
+   - Pros: Keeps app-level control over file access and response behavior.
+   - Tradeoff: More backend handling versus delegating to object storage/CDN.
+4. SQL bootstrap script for local setup
+   - Pros: Fast and explicit local database initialization.
+   - Tradeoff: No migration history tooling by default.
 
-## Security hardening completed
+## Prerequisites
 
-JWT configuration was hardened to prevent insecure production behavior.
+1. Node.js 20+
+2. npm 10+
+3. PostgreSQL 14+ running locally
 
-Implemented changes:
+## Environment Setup
 
-1. `JWT_SECRET` is now mandatory in production.
-2. Development fallback secret remains dev-only.
+1. Copy environment template:
 
-## Current stack
+```bash
+cp .env.example .env
+```
 
-1. Next.js app router
-2. Direct PostgreSQL access via `pg`
-3. SQL schema bootstrap script
-4. JWT-based auth
+2. Update values in `.env` for your local PostgreSQL instance.
+
+Minimum required variables:
+
+- `DB_USER`
+- `DB_PASSWORD`
+- `DB_HOST`
+- `DB_PORT`
+- `DB_NAME`
+- `JWT_SECRET`
+
+## Run the Application (Step by Step)
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Initialize database and apply schema:
+
+```bash
+npm run db:init
+```
+
+3. Start development server:
+
+```bash
+npm run dev
+```
+
+4. Open the app:
+
+```text
+http://localhost:3000
+```
+
+## Helpful Commands
+
+Run linter:
+
+```bash
+npm run lint
+```
+
+Build production bundle:
+
+```bash
+npm run build
+```
+
+Start production server:
+
+```bash
+npm run start
+```
