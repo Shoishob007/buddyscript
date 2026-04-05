@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUserFromRequest } from "@/lib/auth";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { randomUUID } from "crypto";
-import os from "os";
 import { query } from "@/lib/db";
-
-const runtimeUploadDir =
-  process.env.UPLOAD_DIR || path.join(os.tmpdir(), "buddyscript-uploads");
+import { uploadPostImage } from "@/lib/cloudinary";
 
 // GET /api/posts - list public posts + author's private posts
 export async function GET(req: NextRequest) {
@@ -158,15 +153,8 @@ export async function POST(req: NextRequest) {
           { status: 400 },
         );
       }
-      const ext = image.name.split(".").pop() || "jpg";
-      const filename = `${randomUUID()}.${ext}`;
       const bytes = await image.arrayBuffer();
-      await mkdir(runtimeUploadDir, { recursive: true });
-      await writeFile(
-        path.join(runtimeUploadDir, filename),
-        Buffer.from(bytes),
-      );
-      imageUrl = `/api/upload/${filename}`;
+      imageUrl = await uploadPostImage(Buffer.from(bytes), randomUUID());
     }
 
     const postId = randomUUID();

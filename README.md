@@ -21,7 +21,8 @@ Core functionality:
 5. `pg` for database access
 6. JWT auth with `jose`
 7. `bcryptjs` for password hashing
-8. ESLint for linting
+8. Cloudinary for media storage
+9. ESLint for linting
 
 ## Tradeoffs and Design Decisions
 
@@ -31,9 +32,9 @@ Core functionality:
 2. JWT cookie sessions
    - Pros: Simple stateless session handling and easy API integration.
    - Tradeoff: Token invalidation strategy is simpler than a full session store.
-3. File uploads served through API route
-   - Pros: Keeps app-level control over file access and response behavior.
-   - Tradeoff: More backend handling versus delegating to object storage/CDN.
+3. Cloudinary for uploaded media
+   - Pros: Durable hosted storage, simple setup, and deployment-safe media handling.
+   - Tradeoff: Adds a third-party dependency and environment configuration.
 4. SQL bootstrap script for local setup
    - Pros: Fast and explicit local database initialization.
    - Tradeoff: No migration history tooling by default.
@@ -62,6 +63,13 @@ Minimum required variables:
 - `DB_PORT`
 - `DB_NAME`
 - `JWT_SECRET`
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+
+Optional:
+
+- `CLOUDINARY_UPLOAD_FOLDER`
 
 ## Run the Application (Step by Step)
 
@@ -89,6 +97,15 @@ npm run dev
 http://localhost:3000
 ```
 
+## Media Storage Setup
+
+1. Create a free Cloudinary account.
+2. From the Cloudinary dashboard, copy your cloud name, API key, and API secret.
+3. Add those values to your `.env` file.
+4. Optionally set `CLOUDINARY_UPLOAD_FOLDER` to organize uploads under a custom folder.
+
+Post images are uploaded to Cloudinary, so media is not stored on the local server filesystem.
+
 ## Helpful Commands
 
 Run linter:
@@ -108,3 +125,27 @@ Start production server:
 ```bash
 npm run start
 ```
+
+## Deployment
+
+This project should be deployed as a full-stack Next.js application, not as a frontend-only static site.
+
+1. Deploy the app to Vercel.
+2. Use a managed PostgreSQL provider such as Neon.
+3. Configure these environment variables in Vercel:
+
+- `DATABASE_URL` or the individual database variables
+- `JWT_SECRET`
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+- `CLOUDINARY_UPLOAD_FOLDER` (optional)
+
+Because uploads are stored in Cloudinary, media remains durable across deployments and serverless executions.
+
+## Notes
+
+1. In production, `JWT_SECRET` must be set.
+2. Image uploads require valid Cloudinary credentials.
+3. Text-only posts still work without an image upload.
+4. Managed media storage makes this setup compatible with Vercel and other serverless platforms.
