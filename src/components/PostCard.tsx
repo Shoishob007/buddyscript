@@ -1,5 +1,5 @@
 "use client";
-import { useState, FormEvent, useRef } from "react";
+import { useState, FormEvent, useRef, useEffect } from "react";
 import Image from "next/image";
 
 interface User {
@@ -185,6 +185,7 @@ function CommentItem({
     const [replies, setReplies] = useState(comment.replies);
     const [showReplyBox, setShowReplyBox] = useState(false);
     const [replyText, setReplyText] = useState("");
+    const [showReplies, setShowReplies] = useState(true);
     const [liking, setLiking] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
@@ -223,6 +224,7 @@ function CommentItem({
                 setReplies([...replies, data.reply]);
                 setReplyText("");
                 setShowReplyBox(false);
+                setShowReplies(true);
             }
         } finally {
             setSubmitting(false);
@@ -330,7 +332,18 @@ function CommentItem({
                 )}
 
                 {/* Replies */}
-                {replies.map((r) => (
+                {replies.length > 0 && (
+                    <div style={{ marginTop: 6, marginLeft: 40 }}>
+                        <button
+                            type="button"
+                            className="_previous_comment_txt"
+                            onClick={() => setShowReplies((s) => !s)}
+                        >
+                            {showReplies ? "Hide replies" : `View ${replies.length} repl${replies.length > 1 ? "ies" : "y"}`}
+                        </button>
+                    </div>
+                )}
+                {showReplies && replies.map((r) => (
                     <ReplyItem key={r.id} reply={r} currentUserId={currentUserId} />
                 ))}
             </div>
@@ -344,7 +357,7 @@ export default function PostCard({ post, currentUserId }: PostCardProps) {
     const [commentCount, setCommentCount] = useState(post._count.comments);
     const shareCount = 0;
     const [comments, setComments] = useState<Comment[]>([]);
-    const [showComments, setShowComments] = useState(false);
+    const [showComments, setShowComments] = useState(true);
     const [showAllComments, setShowAllComments] = useState(false);
     const [commentText, setCommentText] = useState("");
     const [loadingComments, setLoadingComments] = useState(false);
@@ -362,6 +375,25 @@ export default function PostCard({ post, currentUserId }: PostCardProps) {
     const liked = likes.some((l) => l.userId === currentUserId);
     const visibleReactors = likers.slice(0, 5);
     const extraReactors = Math.max(0, likeCount - visibleReactors.length);
+
+    useEffect(() => {
+        let active = true;
+        async function initialLoad() {
+            setLoadingComments(true);
+            try {
+                const res = await fetch(`/api/posts/${post.id}/comments`);
+                if (!active || !res.ok) return;
+                const data = await res.json();
+                setComments(data.comments);
+            } finally {
+                if (active) setLoadingComments(false);
+            }
+        }
+        void initialLoad();
+        return () => {
+            active = false;
+        };
+    }, [post.id]);
 
     async function toggleLike() {
         if (liking) return;
@@ -409,15 +441,11 @@ export default function PostCard({ post, currentUserId }: PostCardProps) {
     }
 
     async function toggleComments() {
-        if (!showComments && comments.length === 0) {
+        if (comments.length === 0) {
             await loadComments();
         }
-        const next = !showComments;
-        setShowComments(next);
-        if (!next) setShowAllComments(false);
-        if (next) {
-            setTimeout(() => commentRef.current?.focus(), 100);
-        }
+        setShowComments(true);
+        setTimeout(() => commentRef.current?.focus(), 100);
     }
 
     async function submitComment(e: FormEvent) {
@@ -727,15 +755,21 @@ export default function PostCard({ post, currentUserId }: PostCardProps) {
                                         </button>
                                     </div>
                                 )}
+                                {comments.length > 1 && showAllComments && (
+                                    <div className="_previous_comment" style={{ padding: "6px 24px" }}>
+                                        <button
+                                            type="button"
+                                            className="_previous_comment_txt"
+                                            onClick={() => setShowAllComments(false)}
+                                        >
+                                            Hide previous comments
+                                        </button>
+                                    </div>
+                                )}
                                 {(showAllComments ? comments : [comments[comments.length - 1]]).map((c) => (
                                     <CommentItem key={c.id} comment={c} currentUserId={currentUserId} />
                                 ))}
                             </>
-                        )}
-                        {!loadingComments && comments.length === 0 && (
-                            <p style={{ padding: "8px 24px", color: "#999", fontSize: 14 }}>
-                                No comments yet. Be the first!
-                            </p>
                         )}
                     </div>
                 </div>

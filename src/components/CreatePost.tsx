@@ -74,8 +74,54 @@ export default function CreatePost({ currentUser, onPostCreated }: CreatePostPro
     const initials = `${currentUser.firstName[0]}${currentUser.lastName[0]}`.toUpperCase();
 
     return (
-        <div className="_feed_inner_text_area _b_radious6 _padd_b24 _padd_t24 _padd_r24 _padd_l24 _mar_b16">
+        <div className="_feed_inner_text_area _b_radious6 _padd_b24 _padd_t24 _padd_r24 _padd_l24 _mar_b16" style={{ position: "relative" }}>
             <form onSubmit={handleSubmit}>
+                <div
+                    style={{
+                        position: "absolute",
+                        top: 12,
+                        right: 12,
+                        display: "inline-flex",
+                        border: "1px solid #e7ebf0",
+                        borderRadius: 8,
+                        overflow: "hidden",
+                        background: "#fff",
+                        zIndex: 2,
+                    }}
+                >
+                    <button
+                        type="button"
+                        onClick={() => setVisibility("public")}
+                        style={{
+                            border: "none",
+                            padding: "7px 11px",
+                            background: visibility === "public" ? "#1890FF" : "#fff",
+                            color: visibility === "public" ? "#fff" : "#666",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            cursor: "pointer",
+                        }}
+                    >
+                        Public
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setVisibility("private")}
+                        style={{
+                            border: "none",
+                            borderLeft: "1px solid #e7ebf0",
+                            padding: "7px 11px",
+                            background: visibility === "private" ? "#1890FF" : "#fff",
+                            color: visibility === "private" ? "#fff" : "#666",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            cursor: "pointer",
+                        }}
+                    >
+                        Private
+                    </button>
+                </div>
+
                 <div className="_feed_inner_text_area_box">
                     <div className="_feed_inner_text_area_box_image">
                         {currentUser.avatar ? (

@@ -182,7 +182,12 @@ export default function RegisterPage() {
                                                     type="submit"
                                                     className="_social_registration_form_btn_link _btn1"
                                                     disabled={loading}
-                                                    style={{ opacity: loading ? 0.7 : 1, cursor: loading ? "not-allowed" : "pointer" }}
+                                                    style={{
+                                                        width: "100%",
+                                                        boxSizing: "border-box",
+                                                        opacity: loading ? 0.7 : 1,
+                                                        cursor: loading ? "not-allowed" : "pointer",
+                                                    }}
                                                 >
                                                     {loading ? "Creating account..." : "Register"}
                                                 </button>
